@@ -1,0 +1,22 @@
+.content {
+    margin: 10px;
+}
+
+.myRank {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu {
+    button {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .content {
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+}
