@@ -22,7 +22,7 @@ const Register = () => {
         { name: 'Tarefa 5', code: 'tarefa5' }
     ];
 
-    const onTaskChange = (e) => {
+    const onTaskChange = (e: any) => {
         setSelectedTask(e.value);
     }
 
@@ -35,7 +35,7 @@ const Register = () => {
             <h1>Participação</h1>
             <div className={styles.group}>
                 <h3>CPF</h3>
-                <InputText className={styles.button} value={document} onChange={(e) => setDocument(e.target.value)} />
+                <InputText className={styles.button} value={document ?? ""} onChange={(e) => setDocument(e.target.value)} />
                 <h3>Tarefa</h3>
                 <Dropdown style={{ width: '100%' }} value={selectedTask} options={tasks} onChange={onTaskChange} optionLabel="name" placeholder="Selecione uma tarefa" />
             </div>
