@@ -1,12 +1,29 @@
 export interface Tasks {
-    id: string;
+    code: string;
     name: string;
+    canShow: boolean;
+}
+
+export interface UserTasks {
+    id: string;
+    wasFinished: boolean;
 }
 
 export const TaskList: Tasks[] = [
-    { id: 'tetris',  name: 'Tetris' },
-    { id: 'tarefa2', name: 'Tarefa 2' },
-    { id: 'tarefa3', name: 'Tarefa 3' },
-    { id: 'tarefa4', name: 'Tarefa 4' },
-    { id: 'tarefa5', name: 'Tarefa 5' },
+    { code: 'padrao', name: 'Está na festa!', canShow: false },
+    { code: 'tetris', name: 'Tetris', canShow: false },
+    { code: 'tarefa2', name: 'Tarefa 2', canShow: true },
+    { code: 'tarefa3', name: 'Tarefa 3', canShow: true },
+    { code: 'tarefa4', name: 'Tarefa 4', canShow: true },
+    { code: 'tarefa5', name: 'Tarefa 5', canShow: true },
+]
+
+export const TaskListSelect: Tasks[] = [
+    ...TaskList.filter(task => task.canShow).map(task => ({
+        ...task, 'code': `add-${task.code}`, 'name': `Participei da ${task.name}`
+    })),
+    ...TaskList.filter(task => task.canShow)
+        .map(task => ({
+            ...task, 'code': `remove-${task.code}`, 'name': `Não participei da ${task.name}`
+        })),
 ]

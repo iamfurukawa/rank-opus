@@ -1,7 +1,6 @@
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import _ from 'lodash';
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -11,32 +10,80 @@ import { Button } from 'primereact/button';
 import { TaskList } from '../../business/tasks';
 
 import styles from './rank.module.scss'
+import { Person } from '../../business/people';
+import { getAllParticipants } from '../../services/firestore';
+
+interface RankRow {
+    [key: string]: any;
+}
 
 const Rank = () => {
     const navigate = useNavigate();
     const { state } = useLocation();
-    const { document } = state;
+    const person: Person = state?.participant
+
     const [displayMyPosition, setDisplayMyPosition] = useState(false);
+    const [rank, setRank] = useState<RankRow[]>([]);
 
-    const rank =
-        [
-            { "id": "1000", "pos": 1, "name": "Bamboo Watch", "image": 'nadal.jpg', "pts": "20", "tetris": <i style={{ color: 'green' }} className="pi pi-check" /> },
-            { "id": "1001", "pos": 1, "name": "Black Watch", "pts": "20", "tetris": <i style={{ color: 'green' }} className="pi pi-check" /> },
-            { "id": "1002", "pos": 2, "name": "Blue Band", "pts": "20", "tetris": <i style={{ color: 'green' }} className="pi pi-check" /> },
-            { "id": "1003", "pos": 2, "name": "Blue T-Shirt", "pts": "20", "tetris": <i style={{ color: 'red' }} className="pi pi-times" /> },
-            { "id": "1004", "pos": 2, "name": "Bracelet", "pts": "20", "tetris": <i style={{ color: 'green' }} className="pi pi-check" /> },
-            { "id": "1005", "pos": 3, "name": "Brown Purse", "pts": "20", "tetris": <i style={{ color: 'red' }} className="pi pi-times" /> },
-            { "id": "1006", "pos": 3, "name": "Chakra Bracelet", "pts": "20", "tetris": <i style={{ color: 'red' }} className="pi pi-times" /> },
-            { "id": "1007", "pos": 3, "name": "Galaxy Earrings", "pts": "20", "tetris": <i style={{ color: 'green' }} className="pi pi-check" /> },
-            { "id": "1008", "pos": 3, "name": "Game Controller", "pts": "20", "tetris": <i style={{ color: 'red' }} className="pi pi-times" /> },
-            { "id": "1009", "pos": 3, "name": "Gaming Set", "pts": "20", "tetris": <i style={{ color: 'green' }} className="pi pi-check" /> }
-        ]
+    useEffect(() => {
+        const participants = async () => {
+            const { docs } = await getAllParticipants()
 
+            var participantsRows = docs.map(docs => {
+                const participantData = docs.data()
+
+                const participant: RankRow = {
+                    "id": participantData.id,
+                    "pos": 0,
+                    "image": participantData.id + '.jpg',
+                    "name": participantData.name,
+                    "pts": 0,
+                }
+
+                TaskList.forEach(task => {
+                    const wasFinished = participantData.tasks.find(t => t.id === task.code)?.wasFinished
+
+                    participant['pts'] += wasFinished ? 5 : 0
+
+                    participant[task.code] = wasFinished
+                        ? <i style={{ color: 'green' }} className="pi pi-check" />
+                        : <i style={{ color: 'grey' }} className="pi pi-times" />
+                });
+
+                return participant;
+            })
+
+            var uniquePts = _.chain(participantsRows)
+                .map('pts')
+                .uniq()
+                .sortBy()
+                .reverse()
+                .value()
+
+            participantsRows = _.chain(participantsRows)
+                .map(participant => {
+                    participant['pos'] = uniquePts.findIndex(pts => pts == participant['pts']) + 1
+                    return participant
+                })
+                .sortBy('pos')
+                .filter(row => parseInt(row['pts']) > 0)
+                .filter(row => parseInt(row['pos']) < 4)
+                .value()
+
+            setRank(participantsRows)
+        }
+
+        participants()
+    }, [])
     const nameBodyTemplate = (data: any) => {
         return (
             <>
-                <img alt={data.image} src={data.image ? `/people/images/${data.image}` : `/people/images/default.png`} width={32} style={{ verticalAlign: 'middle', borderRadius: '50%', marginRight: "10px" }} />
-                <span className="image-text">{data.name}</span>
+                <div className={styles.user}>
+                    <div className={styles.portrait}>
+                        <img className={styles.avatar} src={`/people/images/${data.image}`} />
+                    </div>
+                    <span className="image-text">{data.name}</span>
+                </div>
             </>
         );
     }
@@ -47,24 +94,37 @@ const Rank = () => {
                 <h1>Ranking</h1>
                 <div className={styles.menu}>
                     <Button label="Novo Registro" onClick={() => navigate('/register')} className="p-button-success" />
-                    <Button label="Minhas Participações" onClick={() => setDisplayMyPosition(!displayMyPosition)} className="p-button-success" />
+                    {
+                        person
+                            ? <Button label="Minhas Participações" onClick={() => setDisplayMyPosition(!displayMyPosition)} className="p-button-success" />
+                            : <Button label="Logar" onClick={() => navigate('/Login')} className="p-button-success" />
+                    }
                 </div>
                 <DataTable value={rank} responsiveLayout="scroll">
-                    <Column field="pos" header="Posição" />
+                    <Column field="pos" header="Posição" align={'center'} />
                     <Column field="name" header="Nome" body={nameBodyTemplate} />
-                    <Column field="pts" header="Pontos" />
+                    <Column field="pts" header="Pontos" align={'center'} />
                     {
-                        TaskList.map(task => (<Column field={task.id} header={task.name} />))
+                        TaskList.map(task => (<Column field={task.code} header={task.name} align={'center'} />))
                     }
                 </DataTable>
             </div>
             <Dialog header="Minhas Participações" visible={displayMyPosition} position={'bottom'} modal onHide={() => setDisplayMyPosition(!displayMyPosition)}
                 draggable={false} resizable={false}>
                 <div className={styles.myRank}>
-                    <h3>Player: Vinícius Furukawa Carvalho</h3>
+                    <h3>Player: {person?.name}</h3>
                     <h3>Participações</h3>
                     {
-                        TaskList.map(task => (<label>{task.name} - <i style={{ color: 'green' }} className="pi pi-check" /></label>))
+                        TaskList.map(task => {
+                            const taskFounded = person?.tasks.find(personTask => personTask.id === task.code)
+                            return (
+                                <label>{
+                                    taskFounded?.wasFinished
+                                        ? <i style={{ color: 'green' }} className="pi pi-check" />
+                                        : <i style={{ color: 'grey' }} className="pi pi-times" />
+                                } - {task.name}</label>
+                            )
+                        })
                     }
                 </div>
             </Dialog>
