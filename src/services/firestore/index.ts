@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import ls from 'localstorage-slim'
 
 import {
     getFirestore,
@@ -28,6 +29,8 @@ export const firestore = getFirestore()
 
 const PARTICIPANTS = 'participants'
 
+const MINUTE = 60
+
 const createCollection = <T = DocumentData>(collectionName: string) => collection(firestore, collectionName) as CollectionReference<T>
 
 const participantsCol = createCollection<Person>(PARTICIPANTS)
@@ -44,5 +47,18 @@ export const getParticipant = async (id: string) =>
         where(documentId(), "==", id)
     ))
 
-export const getAllParticipants = async () => getDocs(query(participantsCol))
+export const getAllParticipants = async () => {
+    const participants = ls.get(PARTICIPANTS)
+    if (participants !== null) {
+        console.log('From cache')
+        return JSON.parse(String(participants))
+    }
 
+    console.log('From firebase')
+
+    const { docs } = await getDocs(query(participantsCol));
+    const documents = docs.map(doc => doc.data())
+
+    ls.set(PARTICIPANTS, JSON.stringify(documents), { ttl: 15 * MINUTE })
+    return documents;
+}

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { Md5 } from 'ts-md5';
+import ls from 'localstorage-slim';
 
 import { InputMask } from 'primereact/inputmask';
 import { Button } from 'primereact/button';
@@ -49,7 +50,7 @@ const Register = () => {
                         return task
                     })
 
-
+                    ls.remove('participants')
                     await updateParticipant(participant)
 
                     navigate('/', { state: { participant } })

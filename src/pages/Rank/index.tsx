@@ -27,21 +27,19 @@ const Rank = () => {
 
     useEffect(() => {
         const participants = async () => {
-            const { docs } = await getAllParticipants()
+            const participants = await getAllParticipants()
 
-            var participantsRows = docs.map(docs => {
-                const participantData = docs.data()
-
+            var participantsRows = participants.map((person: any) => {
                 const participant: RankRow = {
-                    "id": participantData.id,
+                    "id": person.id,
                     "pos": 0,
-                    "image": participantData.id + '.jpg',
-                    "name": participantData.name,
+                    "image": person.id + '.jpg',
+                    "name": person.name,
                     "pts": 0,
                 }
 
                 TaskList.forEach(task => {
-                    const wasFinished = participantData.tasks.find(t => t.id === task.code)?.wasFinished
+                    const wasFinished = person.tasks.find((t: any) => t.id === task.code)?.wasFinished
 
                     participant['pts'] += wasFinished ? 5 : 0
 
