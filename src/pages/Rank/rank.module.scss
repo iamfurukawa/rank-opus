@@ -1,5 +1,9 @@
 .content {
     margin: 10px;
+
+    h1 {
+        color: white;
+    }
 }
 
 .myRank {
@@ -13,6 +17,7 @@
         margin-bottom: 10px;
     }
 }
+
 .user {
     display: flex;
     flex-direction: row;

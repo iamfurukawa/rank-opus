@@ -11,4 +11,9 @@ body,
   height: 100%;
 
   font-family: "Work Sans", sans-serif;
+
+  background-image: url('./background.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
 }
