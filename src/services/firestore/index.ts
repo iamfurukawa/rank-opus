@@ -47,7 +47,10 @@ export const getParticipant = async (id: string) =>
         where(documentId(), "==", id)
     ))
 
-export const getAllParticipants = async () => {
+export const getAllParticipants = async (reset: boolean = false) => {
+
+    if(reset) ls.remove(PARTICIPANTS)
+
     const participants = ls.get(PARTICIPANTS)
     if (participants !== null) {
         console.log('From cache')

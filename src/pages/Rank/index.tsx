@@ -1,21 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import _ from 'lodash';
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 
+import ParticipantsManager, { RankRow } from '../../services/participants'
+
 import { TaskList } from '../../business/tasks';
+import { Person } from '../../business/people';
 
 import styles from './rank.module.scss'
-import { Person } from '../../business/people';
-import { getAllParticipants } from '../../services/firestore';
-
-interface RankRow {
-    [key: string]: any;
-}
 
 const Rank = () => {
     const navigate = useNavigate();
@@ -27,52 +23,13 @@ const Rank = () => {
 
     useEffect(() => {
         const participants = async () => {
-            const participants = await getAllParticipants()
-
-            var participantsRows = participants.map((person: any) => {
-                const participant: RankRow = {
-                    "id": person.id,
-                    "pos": 0,
-                    "image": person.id + '.jpg',
-                    "name": person.name,
-                    "pts": 0,
-                }
-
-                TaskList.forEach(task => {
-                    const wasFinished = person.tasks.find((t: any) => t.id === task.code)?.wasFinished
-
-                    participant['pts'] += wasFinished ? 5 : 0
-
-                    participant[task.code] = wasFinished
-                        ? <i style={{ color: 'green' }} className="pi pi-check" />
-                        : <i style={{ color: 'grey' }} className="pi pi-times" />
-                });
-
-                return participant;
-            })
-
-            var uniquePts = _.chain(participantsRows)
-                .map('pts')
-                .uniq()
-                .sortBy()
-                .reverse()
-                .value()
-
-            participantsRows = _.chain(participantsRows)
-                .map(participant => {
-                    participant['pos'] = uniquePts.findIndex(pts => pts == participant['pts']) + 1
-                    return participant
-                })
-                .sortBy('pos')
-                .filter(row => parseInt(row['pts']) > 0)
-                .filter(row => parseInt(row['pos']) < 4)
-                .value()
-
-            setRank(participantsRows)
+            const newRank = await ParticipantsManager.getParticipants();
+            setRank(newRank)
         }
 
         participants()
     }, [])
+
     const nameBodyTemplate = (data: any) => {
         return (
             <>
