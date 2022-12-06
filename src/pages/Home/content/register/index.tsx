@@ -75,7 +75,7 @@ const Register = () => {
                 <h3>Tarefa</h3>
                 <Dropdown style={{ width: '100%' }} value={selectedTask} options={TaskListSelect} onChange={onTaskChange} optionLabel="name" placeholder="Selecione uma tarefa" />
             </div>
-            <Button onClick={register} label="Participei!" aria-label="Anotar!" loading={loadingButton} />
+            <Button onClick={register} label="Registrar!" aria-label="Anotar!" loading={loadingButton} />
 
             <div className={styles.group}>
                 <Link to="/login">
