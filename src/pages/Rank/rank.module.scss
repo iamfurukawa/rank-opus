@@ -24,8 +24,9 @@
     align-items: center;
 
     .portrait {
+        min-width: 60px;
         width: 60px;
-        height: 60px;
+        aspect-ratio: 1 / 1;
 
         margin-right: 10px;
 
