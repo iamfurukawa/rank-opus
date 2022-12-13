@@ -11,7 +11,7 @@ db = firestore.client()
 collectionRef = db.collection('participants')
 
 taskList = [
-    {'id': 'padrao', 'wasFinished': True},
+    {'id': 'padrao', 'wasFinished': False},
     {'id': 'tetris', 'wasFinished': False},
     {'id': 'tarefa2', 'wasFinished': False},
     {'id': 'tarefa3', 'wasFinished': False},

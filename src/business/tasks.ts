@@ -10,12 +10,11 @@ export interface UserTasks {
 }
 
 export const TaskList: Tasks[] = [
-    { code: 'padrao', name: 'Está na festa!', canShow: false },
-    { code: 'tetris', name: 'Tetris', canShow: false },
-    { code: 'tarefa2', name: 'Tarefa 2', canShow: true },
-    { code: 'tarefa3', name: 'Tarefa 3', canShow: true },
-    { code: 'tarefa4', name: 'Tarefa 4', canShow: true },
-    { code: 'tarefa5', name: 'Tarefa 5', canShow: true },
+    { code: 'padrao', name: 'Está na festa!', canShow: true },
+    { code: 'tetris', name: 'Tetris', canShow: true },
+    { code: 'tarefa2', name: 'Gartic Phone', canShow: true },
+    { code: 'tarefa3', name: 'Bingo', canShow: true },
+    { code: 'tarefa4', name: 'Stop', canShow: true },
 ]
 
 export const TaskListSelect: Tasks[] = [
