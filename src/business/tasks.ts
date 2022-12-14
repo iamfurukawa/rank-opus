@@ -14,7 +14,7 @@ export const TaskList: Tasks[] = [
     { code: 'tetris', name: 'Tetris', canShow: true },
     { code: 'tarefa2', name: 'Gartic Phone', canShow: true },
     { code: 'tarefa3', name: 'Bingo', canShow: true },
-    { code: 'tarefa4', name: 'Stop', canShow: true },
+    { code: 'tarefa4', name: '...', canShow: true },
 ]
 
 export const TaskListSelect: Tasks[] = [
