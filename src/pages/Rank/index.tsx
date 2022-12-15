@@ -24,7 +24,7 @@ const Rank = () => {
     useEffect(() => {
         const participants = async () => {
             const newRank = await ParticipantsManager.getParticipants();
-            console.log(newRank.map((row: any) => row['name']))
+            console.log(newRank.map((row: any) => ({name: row['name'], pts: row['pts']})))
             setRank(newRank)
         }
 

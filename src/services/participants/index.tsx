@@ -49,7 +49,6 @@ const ParticipantsManager = () => {
             })
             .sortBy('pos')
             .filter(row => parseInt(row['pts']) > 0)
-            .filter(row => parseInt(row['pos']) < 4)
             .value()
 
         return participantsRows;
